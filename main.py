@@ -8,7 +8,11 @@ import io
 import time
 import threading
 import cv2
-import serial
+try:
+    import serial
+except:
+    print("importing serial library failed due to probably os difference.")
+import subprocess
 
 app = Flask(__name__) #create flask object.
 
@@ -33,6 +37,7 @@ try:
     picam2.configure(config)#configure Picamera object.
     picam2.start() #start Picamera object.
 except:
+    print("camera resetting failed.")
     pass
 
 lock = threading.Lock()
@@ -42,10 +47,13 @@ def generate_frames(): #capture frame with camera and converts to jpg.
         with lock:
             frame = picam2.capture_array() #picam에서 캡쳐.
 
-        # YUV2 -> JPEG 인코딩
+        # JPEG 인코딩
         ret, jpeg = cv2.imencode('.jpg', frame)
         if not ret:
             continue
+
+        current_time = time.time()
+        cv2.putText(jpeg, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_COMPLEX, 2 (255,255,255), 2)
 
         yield (
             b'--frame\r\n'
