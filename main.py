@@ -47,13 +47,15 @@ def generate_frames(): #capture frame with camera and converts to jpg.
         with lock:
             frame = picam2.capture_array() #picam에서 캡쳐.
 
+        current_time = time.strftime("%H:%M:%S")
+        cv2.putText(frame, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_COMPLEX, 2 ,(255,255,255), 2)
+        current_hardware_temp = subprocess.run(["vcgencmd", "measure_temp"])
+        cv2.putText(frame, f"{current_hardware_temp}",(50, 40), cv2.FONT_HERSHEY_PLAIN, 2 ,(255,255,255), 2)
+
         # JPEG 인코딩
         ret, jpeg = cv2.imencode('.jpg', frame)
         if not ret:
             continue
-
-        current_time = time.time()
-        cv2.putText(jpeg, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_COMPLEX, 2 ,(255,255,255), 2)
 
         yield (
             b'--frame\r\n'
