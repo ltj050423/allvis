@@ -53,7 +53,7 @@ def generate_frames(): #capture frame with camera and converts to jpg.
             continue
 
         current_time = time.time()
-        cv2.putText(jpeg, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_COMPLEX, 2 (255,255,255), 2)
+        cv2.putText(jpeg, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_COMPLEX, 2 ,(255,255,255), 2)
 
         yield (
             b'--frame\r\n'
