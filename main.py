@@ -48,9 +48,11 @@ def generate_frames(): #capture frame with camera and converts to jpg.
             frame = picam2.capture_array() #picam에서 캡쳐.
 
         current_time = time.strftime("%H:%M:%S")
-        cv2.putText(frame, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_COMPLEX, 2 ,(255,255,255), 2)
-        current_hardware_temp = subprocess.run(["vcgencmd", "measure_temp"])
-        cv2.putText(frame, f"{current_hardware_temp}",(50, 40), cv2.FONT_HERSHEY_PLAIN, 2 ,(255,255,255), 2)
+        cv2.putText(frame, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_PLAIN, 0.4 ,(255,255,255), 2)
+
+        current_hardware_temp = subprocess.run(["vcgencmd", "measure_temp"], capture_output=True, text=True)
+        current_hardware_temp = current_hardware_temp.stdout
+        cv2.putText(frame, f"{current_hardware_temp}",(50, 40), cv2.FONT_HERSHEY_PLAIN, 0.4 ,(255,255,255), 2)
 
         # JPEG 인코딩
         ret, jpeg = cv2.imencode('.jpg', frame)
