@@ -18,7 +18,7 @@ app = Flask(__name__) #create flask object.
 
 picam2 = Picamera2() #create Picamera object.
 config = picam2.create_video_configuration(
-    main={"size": (640, 480),
+    main={"size": (1536, 864),
           "format": "RGB888"
 
             })
@@ -47,12 +47,13 @@ def generate_frames(): #capture frame with camera and converts to jpg.
         with lock:
             frame = picam2.capture_array() #picam에서 캡쳐.
 
+        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
         current_time = time.strftime("%H:%M:%S")
-        cv2.putText(frame, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_PLAIN, 0.4 ,(255,255,255), 2)
+        cv2.putText(frame, f"{current_time}", (5, 40), cv2.FONT_HERSHEY_PLAIN, 0.6 ,(255,255,255), 2)
 
         current_hardware_temp = subprocess.run(["vcgencmd", "measure_temp"], capture_output=True, text=True)
         current_hardware_temp = current_hardware_temp.stdout
-        cv2.putText(frame, f"{current_hardware_temp}",(50, 40), cv2.FONT_HERSHEY_PLAIN, 0.4 ,(255,255,255), 2)
+        cv2.putText(frame, f"{current_hardware_temp}",(5, 100), cv2.FONT_HERSHEY_PLAIN, 0.6 ,(255,255,255), 2)
 
         # JPEG 인코딩
         ret, jpeg = cv2.imencode('.jpg', frame)
@@ -86,3 +87,5 @@ def pan_control(direction):
 
 if __name__ == '__main__':  
     app.run(host='0.0.0.0', port=8083, threaded=True)
+
+    print("http://100.103.234.97:8083") #need to change to dynamic link later
