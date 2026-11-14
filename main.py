@@ -18,7 +18,7 @@ app = Flask(__name__) #create flask object.
 
 picam2 = Picamera2() #create Picamera object.
 config = picam2.create_video_configuration(
-    main={"size": (640, 480),
+    main={"size": (1536, 864),
           "format": "RGB888"
 
             })
@@ -30,8 +30,9 @@ try:
         timeout=0.2
     )
 
-except:
-    print("arduino is not responding. camera only.")
+except Exception as e:
+    print("camera reset failed:", repr(e))
+    raise
 
 try:    
     picam2.configure(config)#configure Picamera object.
@@ -83,6 +84,10 @@ def pan_control(direction):
         return f"OK: {direction}"
     else:
         return "unknown command", 400
+
+@app.route('')
+def rotate_feed():
+    pass
 
 if __name__ == '__main__':  
     app.run(host='0.0.0.0', port=8083, threaded=True)
