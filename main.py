@@ -7,7 +7,7 @@ except:
 import io
 import time
 import threading
-import cv2s
+import cv2
 try:
     import serial
 except:
@@ -94,3 +94,4 @@ def rotate_feed():
 
 if __name__ == '__main__':  
     app.run(host='0.0.0.0', port=8083, threaded=True)
+    print("http://100.103.234.97:8083")
