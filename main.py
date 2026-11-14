@@ -7,7 +7,7 @@ except:
 import io
 import time
 import threading
-import cv2
+import cv2s
 try:
     import serial
 except:
@@ -48,12 +48,15 @@ def generate_frames(): #capture frame with camera and converts to jpg.
         with lock:
             frame = picam2.capture_array() #picam에서 캡쳐.
 
+        frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
         current_time = time.strftime("%H:%M:%S")
-        cv2.putText(frame, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_PLAIN, 0.4 ,(255,255,255), 2)
+        cv2.putText(frame, f"{current_time}", (30, 40), cv2.FONT_HERSHEY_PLAIN, 0.6 ,(255,255,255), 2)
 
         current_hardware_temp = subprocess.run(["vcgencmd", "measure_temp"], capture_output=True, text=True)
         current_hardware_temp = current_hardware_temp.stdout
-        cv2.putText(frame, f"{current_hardware_temp}",(50, 40), cv2.FONT_HERSHEY_PLAIN, 0.4 ,(255,255,255), 2)
+
+        cv2.putText(frame, f"{current_hardware_temp}",(30, 60), cv2.FONT_HERSHEY_PLAIN, 0.6 ,(255,255,255), 2)
 
         # JPEG 인코딩
         ret, jpeg = cv2.imencode('.jpg', frame)
