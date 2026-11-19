@@ -1,5 +1,6 @@
 # stream_server.py
-from flask import Flask, Response, request, render_template
+from flask import Flask, Response, request, render_template, session, redirect, url_for
+from werkzeug.security import generate_password_hash, check_password_hash
 try:
     from picamera2 import Picamera2 #only imports on raspberry pi.
 except:
@@ -13,15 +14,27 @@ try:
 except:
     print("importing serial library failed due to probably os difference.")
 import subprocess
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__) #create flask object.
+app.secret_key = os.environ
+
+def read_temp():
+    with open("/sys/class/thermal/thermal_zone0/temp") as f:
+        return int(f.read()) / 1000 
+
+def choose_camera():
+    all_cameras = subprocess.run({"rpicam-hello", "--list-cameras"} ,capture = True, text = True) 
+    #---not completed
+
 
 picam2 = Picamera2() #create Picamera object.
 config = picam2.create_video_configuration(
-    main={"size": (1536, 864),
+    main={
+        "size": (1536, 864),
           "format": "RGB888"
-
-            })
+        }) #currently fixed to specific resolution. need to fix later.
 
 try:
     arduino = serial.Serial(
@@ -36,6 +49,7 @@ except:
 try:    
     picam2.configure(config)#configure Picamera object.
     picam2.start() #start Picamera object.
+    
 except:
     print("camera resetting failed.")
     pass
@@ -86,6 +100,7 @@ def pan_control(direction):
         return "unknown command", 400
 
 if __name__ == '__main__':  
+    print("http://100.103.234.97:8083") #need to change to dynamic link later
     app.run(host='0.0.0.0', port=8083, threaded=True)
 
-    print("http://100.103.234.97:8083") #need to change to dynamic link later
+
